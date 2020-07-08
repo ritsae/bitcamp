@@ -13,10 +13,10 @@ Tool : IntelliJ, STS, VSCode, Eclipse EE, docker
   - part : DashBoard part 서류/페이지 작성, HTML/CSS(테마 커스텀 사용), thymeleaf layout 작성
   - 사용기술 : Spring Boot, thymeleaf, Oracle(docker사용/MAC OS), Mybatis, HTML/CSS/Bootstrap, JS
   
-  :heavy_plus_sign: 07/09 Oracle -> AWS RDS로 변경, EC2로 배포(dashboard외 다른 파트 미구현)
-  http://15.164.81.143/
-    :x: EC2 구현 중 발생한 문제
-      1. RDS DB 커넥션 문제 -> EC2의 보안그룹을 RDS보안그룹 인바운드 추가로 해결
-      2. google chart api 외 프로젝트 링크 에러 -> 절대경로 사용이 문제, 절대경로 삭제/수정으로 해결
-      3. 파일 업로드/다운로드가 안 되는 문제 -> 미해결
+  :heavy_plus_sign: 07/09 Oracle -> AWS RDS로 변경, EC2로 배포(dashboard외 다른 파트 미구현)<br>
+  http://15.164.81.143/<br>
+  :x: EC2 구현 중 발생한 문제<br>
+      1. RDS DB 커넥션 문제 -> EC2의 보안그룹을 RDS보안그룹 인바운드 추가로 해결<br>
+      2. google chart api 외 프로젝트 링크 에러 -> 절대경로 사용이 문제, 절대경로 삭제/수정으로 해결<br>
+      3. 파일 업로드/다운로드가 안 되는 문제 -> 미해결<br>
     
