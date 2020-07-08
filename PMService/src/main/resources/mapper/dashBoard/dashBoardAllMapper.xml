@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.bit.dashBoard.mapper.DashBoardAllMapper">
+    <select id="selectKeyProject" resultType="com.project.bit.project.domain.ProjectDTO">
+        <![CDATA[
+        SELECT * FROM(SELECT p.*, ps.project_status AS project_status_name, pt.project_type AS project_type_name
+            FROM projects p
+            INNER JOIN project_status ps ON p.project_statusCode = ps.project_statusCode
+            INNER JOIN project_types pt ON p.project_typeCode = pt.project_typeCode ORDER BY p.project_finish ASC) WHERE ROWNUM<=3
+        ]]>
+    </select>
+    <select id="selectProjectAllStatusCount" resultType="com.project.bit.dashBoard.domain.ProjectStatusVO">
+        SELECT t.project_type AS project_status_name, COUNT(p.project_typecode) AS project_status_all,
+            COUNT(CASE WHEN project_statuscode = 'projstatus100' THEN 1 END) AS project_status_process,
+            COUNT(CASE WHEN project_statuscode = 'projstatus200' THEN 1 END) AS project_status_complete,
+            COUNT(CASE WHEN project_statuscode = 'projstatus300' THEN 1 END) AS project_status_stop,
+            COUNT(CASE WHEN project_statuscode = 'projstatus400' THEN 1 END) AS project_status_standBy
+        FROM project_types t
+        LEFT OUTER JOIN projects p ON t.project_typecode = p.project_typecode GROUP BY t.project_type
+    </select>
+    <select id="selectProjectAllStatus" resultType="com.project.bit.dashBoard.domain.ProjectStatusCountVO">
+        SELECT COUNT(p.project_statuscode) AS project_status,
+            ps.project_status AS project_status_name
+        FROM projects p, project_status ps
+        WHERE p.project_statuscode=ps.project_statuscode
+        GROUP BY ps.project_status
+    </select>
+    <select id="selectIssueAllStatus" resultType="com.project.bit.dashBoard.domain.IssueStatusCountVO">
+        SELECT COUNT(i.issue_code) AS issue_status,
+            it.issue_type AS issue_status_name
+        FROM project_issues i, project_issue_types it
+        WHERE i.issue_type_code=it.issue_type_code
+        GROUP BY it.issue_type
+    </select>
+    <select id="selectMonthlyProjectStatus" resultType="com.project.bit.dashBoard.domain.MonthlyProjectCountVO">
+        SELECT
+			TO_CHAR(p.project_finish, 'yyyy-MM') AS project_month,
+			COUNT(*) as project_count,
+			(SELECT COUNT(*) FROM projects p1 WHERE p1.project_typecode = 'devtype100' AND TO_CHAR(p1.project_finish, 'yyyy-MM') = TO_CHAR(p.project_finish, 'yyyy-MM')) AS devType100,
+			(SELECT COUNT(*) FROM projects p1 WHERE p1.project_typecode = 'devtype200' AND TO_CHAR(p1.project_finish, 'yyyy-MM') = TO_CHAR(p.project_finish, 'yyyy-MM')) AS devType200,
+			(SELECT COUNT(*) FROM projects p1 WHERE p1.project_typecode = 'devtype300' AND TO_CHAR(p1.project_finish, 'yyyy-MM') = TO_CHAR(p.project_finish, 'yyyy-MM')) AS devType300,
+			(SELECT COUNT(*) FROM projects p1 WHERE p1.project_typecode = 'devtype400' AND TO_CHAR(p1.project_finish, 'yyyy-MM') = TO_CHAR(p.project_finish, 'yyyy-MM')) AS devType400,
+			(SELECT COUNT(*) FROM projects p1 WHERE p1.project_typecode = 'devtype500' AND TO_CHAR(p1.project_finish, 'yyyy-MM') = TO_CHAR(p.project_finish, 'yyyy-MM')) AS devType500
+		FROM projects p
+		GROUP BY to_char(p.project_finish, 'yyyy-MM')
+		ORDER BY to_char(p.project_finish, 'yyyy-MM')
+    </select>
+    <select id="selectProjectAllType" resultType="com.project.bit.dashBoard.domain.ProjectTypeCountVO">
+    	SELECT
+			count(p.project_typeCode) as project_type_account,
+			pt.project_type as project_type_name
+		FROM projects p 
+			INNER JOIN project_types pt ON p.project_typeCode = pt.project_typeCode
+		GROUP BY (p.project_typeCode, pt.project_type)
+    </select>
+
+</mapper>

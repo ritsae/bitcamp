@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<title id="pageTitle">MAIN</title>
+<!-- 현제 페이지 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+</th:block>
+
+<!-- 현제 페이지 고유 스크립 추가 -->
+<th:block layout:fragment="script">
+	<script type="text/javascript" src="/js/myPage/myProjects.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+	<div class="card">
+		<div class="card-body">
+			<div class="text-center">
+				<h3>내 작업</h3>
+				<p class="lead">All your current and finished projects is here.</p>
+				<hr class="my-4">
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 grid-margin">
+			<div class="card">
+				<div class="card-body">
+					<div class="row alighn-center">
+						<div class="col-12">
+						<div class="container">
+							<form>
+								<div class="row">
+									<div class="col">
+										<select id="projectProgress" class="form-control">
+											<option value="" class="form-control">프로젝트 상태</option>
+											<option class="form-control"
+												th:each="el : ${projectStatusNames}"
+												th:text="${el.projectStatus}"></option>
+										</select>
+									</div>
+									<div class="col">
+										<input id="projectName" type="text" class="form-control"
+											placeholder="프로젝트 이름">
+									</div>
+									<div class="input-group flex-nowrap col">
+										<div class="input-group-prepend">
+											<span class="input-group-text" id="addon-wrapping"> <svg
+													class="bi bi-search" width="1em" height="1em"
+													viewBox="0 0 16 16" fill="currentColor"
+													xmlns="http://www.w3.org/2000/svg">
+  											<path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z" />
+  											<path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z" />
+										</svg>
+											</span>
+										</div>
+										<input id="elasticSearch" type="text" class="form-control"
+											placeholder="키워드" aria-label="Username"
+											aria-describedby="addon-wrapping">
+									</div>
+								</div>
+							</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<div>
+					    <table width="100%" class="table" style="text-align: center">
+					       <thead>
+							<tr class="card-header">
+								<th>작업 이름</th>
+								<th>프로젝트 이름</th>
+								<th>프로젝트 PMO</th>
+								<th>프로젝트 상태</th>
+								<th>프로젝트 시작일</th>
+								<th>프로젝트 종료일</th>
+							</tr>
+							</thead>
+							 <tbody>
+							<tr th:each="el : ${myProjects}" class="items">
+								<th scope="row" th:text="${el.taskName==null? 'No any tasks': el.taskName}"></th>
+								<th scope="row"><a th:href="'/project/' + ${el.projectCode}" th:text="${el.projectName}" id="projectName"></a></th>
+								<th scope="row" th:text="${el.projectPmo==null? 'Empty': el.projectPmo}"></th>
+								<th scope="row" th:text="${el.projectStatus}"></th>
+								<th scope="row" th:text="${el.projectStart}"></th>
+								<th scope="row" th:text="${el.projectFinish}"></th>
+								<th scope="row" th:text="${el.taskName==null? '': el.taskName + el.projectName} + ${el.projectPmo==null? '': el.projectPmo} + ${el.projectName + el.projectStatus + el.projectStart + el.projectFinish}" hidden="" class="val"></th>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>	
+			</div>
+		</div>
+	</div>
+</div>
+
+</html>

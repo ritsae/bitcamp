@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.bit.chat.mapper.ParticipationMapper">
+    <resultMap id="Participation" type="com.project.bit.chat.domain.Participation">
+        <result property="userId" column="user_id"></result>
+        <result property="conversationId" column="conversation_id"></result>
+        <result property="joinTime" column="join_time"></result>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="Participation">
+        SELECT *
+        FROM participations
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="save" parameterType="list">
+        <foreach collection="list" item="item" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+        INTO participations (user_id, conversation_id)
+        VALUES (#{item.userId}, #{item.conversationId})
+        </foreach>
+    </insert>
+
+    <delete id="leave" parameterType="com.project.bit.chat.domain.Message">
+        DELETE
+        FROM participations
+        WHERE conversation_id=#{roomNo} and user_Id=#{authorId}
+    </delete>
+
+    <select id="count" parameterType="String" resultType="int">
+        SELECT count(CONVERSATION_ID)
+        FROM PARTICIPATIONS
+        WHERE USER_ID=#{userId}
+    </select>
+</mapper>

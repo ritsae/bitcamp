@@ -1,0 +1,601 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      layout:decorator="~{layout/default}">
+
+<title id="pageTitle">새 결재 작성</title>
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        label {
+            float: right;
+        }
+        .col-xs-1 {
+            /*background-color: whitesmoke;*/
+            /*background-color: #EDF8FA;*/
+            background-color: #E3ECF3;
+        }
+        .col-form-label{
+            font-weight: bold;
+        }
+
+    </style>
+
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script src="/js/approval/modal-demo.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+    <script src="//cdn.ckeditor.com/4.14.0/full/ckeditor.js"></script>
+    <script th:src="@{/js/approval/jquery.treeview.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/approval/jquery.treeview.css}"/>
+
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-lg-4">
+                            <h3 class="card-title" style="margin-bottom: 0px;">새 결재 작성</h3>
+                        </div>
+                        <div class="col-lg-8">
+                            <button type="button" class="btn btn-primary btn"
+                                    style="float: right; margin-left: 25px"
+                                    onclick="location.href = 'javascript:history.back();'">목록
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <form th:action="@{/approval/postApDoc}" method="post" role="form">
+                        <div class="form-group row">
+                            <div class="col-lg-9">
+                                <h2 class="card-title" th:text="${form.getApFormName()}" readonly
+                                    style="margin-top: 5px;"></h2>
+                            </div>
+
+                            <div class="col-lg-3" style="padding-left: 30px; padding-right: 0px;">
+                                <th:block th:if="${approvers} != null">
+                                    <table border="1px" style="table-layout: fixed; box-sizing: border-box;
+                                border-color: silver; text-align: center; float: left;">
+                                        <thead>
+                                        <tr>
+                                            <td rules="none" width="28px"
+                                                style="background-color:#e6e9ed; border-bottom-color:#e6e9ed">결
+                                            </td>
+                                            <th:block th:each="i : ${#numbers.sequence( 0, approvers.size()-1)}">
+                                                <!--class="table-primary" -->
+                                                <th width="70px" style="color: black;padding: 3px;"
+                                                    th:text="${approvers.get(i).getDutyName()}">
+                                                </th>
+                                            </th:block>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td rules="none" width="28px"
+                                                style="background-color:#e6e9ed; border-bottom-color:#e6e9ed">재
+                                            </td>
+                                            <th:block th:each="i : ${#numbers.sequence( 0, approvers.size()-1)}">
+                                                <td width="70px" height="50px"
+                                                    th:text="${approvers.get(i).getUserName()}"></td>
+                                            </th:block>
+                                        </tr>
+                                        <tr>
+                                            <td rules="none" width="28px" style="background-color:#e6e9ed;">선</td>
+                                            <th:block th:each="i : ${#numbers.sequence( 0, approvers.size()-1)}">
+                                                <td width="70px" style="padding: 3px;">미결</td>
+                                            </th:block>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </th:block>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">제목</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <input class="form-control" maxlength="20" name="apDocTitle" type="text"
+                                       id="apDocTitle"
+                                       placeholder="제목을 입력하세요.">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">기안자</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <input class="form-control" maxlength="100" name="apDocWriter" hidden="hidden"
+                                       th:value="${#authentication.name}" type="text" readonly>
+                                <input class="form-control" maxlength="100" name="apDocWriterName"
+                                       th:value="${writer.userName}" type="text" readonly style="background-color: white;">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">프로젝트</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <input class="form-control" maxlength="100" name="apDocProjectName"
+                                       th:value="${writer.projectName}" type="text" readonly style="background-color: white;">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">참조자</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <div class="row">
+                                    <div class="col-10 col">
+                                        <input class="form-control" maxlength="200" name="apReferrers" type="text"
+                                               placeholder="참조자를 선택하세요." readonly style="background-color: white;">
+                                        <input name="apReferrersId" type="text" value=" " hidden>
+
+                                    </div>
+                                    <div class="col-2 col">
+                                        <button type="button" id="selectReferrers" class="btn btn-inverse-dark btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#exampleModal" data-whatever="@mdo">+
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">첨부파일</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <input class="form-control" maxlength="100" name="apFiles" type="file" multiple
+                                       readonly style="background-color: white;">
+                                <div class="uploadResult">
+                                    <ul>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="excutionDateForm">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-1 col-lg-1">
+                                <label class="col-form-label">문서내용</label>
+                            </div>
+                            <div class="col-xs-8 col-lg-8">
+                                <div class="document-editor">
+                                    <div class="document-editor__toolbar"></div>
+                                    <div class="document-editor__editable-container">
+                                        <div class="document-editor__editable" name="editor1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="apFormNo" th:value="${form.getApFormNo()}">
+                        <input type="hidden" name="apDocContent" id="formData" th:value="${form.getApFormContent()}">
+                        <input type="hidden" th:value="${approvers}" id="approvers"><br>
+                        <button type="button" id="cancel" onclick="location.href = '/approval/apMain'"
+                                class="btn btn-inverse-dark btn-fw" style="float: right; margin-left: 15px">취소
+                        </button>
+                        <button type="submit" id="request" class="btn btn-success btn-fw"
+                                style="float: right; margin-left: 15px">결재 요청
+                        </button>
+                    </form>
+
+                    <!-- 모달 -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="padding: 15px;">
+                                    <h4 class="modal-title" id="exampleModalLabel">참조자 지정</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="padding: 10px;">
+                                    <form>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="row">
+                                                        <label class="col-form-label"><h5 style="margin-bottom: 0px;margin-left: 20px;">참조자 정보</h5></label></div>
+                                                    <div class="card" style=" height: 80%;">
+                                                        <div class="card-body">
+                                                            <!-- 참조자 리스트 -->
+                                                            <ul id="browser" class="filetree treeview"
+                                                                style="width: 200px;">
+                                                                <li th:each="team: ${teams}" class="closed expandable">
+                                                                    <div class="hitarea closed-hitarea expandable-hitarea"></div>
+                                                                    <span class="folder" th:text="${team}"></span>
+                                                                    <ul style="display: block;">
+                                                                        <th:block th:each="referrer:${referrers}"
+                                                                                  th:if="${team}==${referrer.teamName}">
+                                                                            <li class="last">
+                                                                            <span hidden="hidden"
+                                                                                  th:text="${referrer.userId}"></span>
+                                                                                <span class="file"
+                                                                                      th:text="${referrer.userName}+' '+${referrer.positionName}"></span>
+                                                                            </li>
+                                                                        </th:block>
+                                                                    </ul>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="row">
+                                                        <label class="col-form-label"><h5 style="margin-bottom: 0px;margin-left: 20px;">선택된 참조자</h5></label></div>
+                                                    <div class="card" style=" height: 80%;">
+                                                        <div class="card-body" id="selectedRefer">
+                                                            <ul>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" id="referrersApply"
+                                            data-dismiss="modal">적용
+                                    </button>
+                                    <button type="button" class="btn btn-light" data-dismiss="modal">닫기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- 모달 end -->
+                    <div id="js-legend" class="chartjs-legend mt-4 mb-5"></div>
+                </div> <!--card body end-->
+            </div>
+        </div>
+
+        <script>
+            CKEDITOR.replace(document.querySelector('.document-editor__editable'), {
+                toolbar: [
+                    {
+                        name: 'document',
+                        groups: ['mode', 'document', 'doctools'],
+                        items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']
+                    },
+                    {
+                        name: 'clipboard',
+                        groups: ['clipboard', 'undo'],
+                        items: ['Cut', 'Copy']
+                    },
+                    {
+                        name: 'editing',
+                        groups: ['find', 'selection', 'spellchecker'],
+                        items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt']
+                    },
+                    {
+                        name: 'basicstyles',
+                        groups: ['basicstyles', 'cleanup'],
+                        items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']
+                    },
+                    {
+                        name: 'paragraph',
+                        groups: ['list', 'indent', 'blocks', 'align', 'bidi'],
+                        items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']
+                    },
+                    {name: 'insert', items: ['Table', 'HorizontalRule']},
+                    {name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+                    {name: 'colors', items: ['TextColor', 'BGColor']},
+                    {name: 'tools', items: ['Maximize']},
+                    {name: 'others', items: ['-']},
+                    {name: 'about', items: ['About']}
+                ],
+                width: '100%',
+                height: '400px',
+                startupFocus: false
+            });
+
+            var formData = document.querySelector('#formData').value;
+            CKEDITOR.instances.editor1.setData(formData);
+
+            $(document).ready(function (e) {
+
+                //결재 요청 후 뒤로가기 방지 ---> 미해결
+                // window.history.pushState(null, null, location.href);
+                // window.history.pushState(null, null, "/approval/apMain");
+                // window.onpopstate = function (){
+                //     location.href="/approval/apMain";
+                //     history.go(1);
+                // };
+
+                var formType = $("input[name='apFormNo']").val();
+                if(formType =='1' || formType=='2' || formType=='3'){
+                    $('#excutionDateForm').html("" +
+                        "                            <div class='col-xs-1 col-lg-1'>\n" +
+                        "                                <label class='col-form-label' name='dateFormName'>적용기간</label>\n" +
+                        "                            </div>\n" +
+                        "                            <div class='col-xs-3 col-lg-3'>\n" +
+                        "                                <input type='date' class='form-control' name='apStartDate'>\n" +
+                        "                            </div>\n" +
+                        "                            -\n" +
+                        "                            <div class='col-xs-3 col-lg-3'>\n" +
+                        "                                <input type='date' class='form-control' name='apEndDate'>\n" +
+                        "                            </div>");
+                }
+
+                //----------------------참조자 모달 관련----------------------
+                $("#browser").treeview();
+
+                $('#browser li ul li').hover(function () {
+                    $(this).children().css('background-color', 'rgba(0,0,0,0.1)');
+                }, function () {
+                    $(this).children().css('background-color', '');
+                });
+
+                //선택된 참조자 클릭시 참조 목록에서 제외
+                $(document).on("click", "#selectedRefer ul li", function (e) {
+                    var indexId = selectedReferArr.indexOf($(this).children().last().text());
+
+                    selectedReferArr.splice(indexId, 1);
+                    selectedReferNameArr.splice(indexId, 1);
+                    // console.log("id배열:  " + selectedReferArr);
+                    // console.log("name배열:  " + selectedReferNameArr);
+                    e.preventDefault();
+                    $(this).remove();
+                });
+
+                var selectedReferArr = new Array(); //submit 참조자 리스트
+                var selectedReferNameArr = new Array(); //참조자 이름
+
+                //참조자 모달에서 참조자 선택시
+                $('#browser li ul li').on('click', function (e) {
+
+                    var selectedId = $(this).children().first().text();
+                    var selectedName = $(this).children().last().text();
+
+                    if (!selectedReferArr.includes(selectedId)) {
+                        selectedReferArr.push(selectedId); //선택된 참조자 아이디를 추가
+                        selectedReferNameArr.push(selectedName);
+                        $('#selectedRefer ul').append("<li style='list-style:none;'>" + "<span>" + selectedName + ' </span>' +
+                            "<span hidden='hidden'>" + selectedId + '</span></li>');
+                        // console.log(selectedReferArr);
+                    } else {
+                        confirm("이미 선택된 참조자입니다.");
+                    }
+                    $('#selectedRefer ul li').hover(function () {
+
+                        $(this).css('background-color', 'rgba(0,0,0,0.1)');
+                    }, function () {
+                        $(this).css('background-color', '');
+                    });
+
+                });
+                //적용시 작성 화면에 반영
+                $('#referrersApply').on('click', function (e) {
+                    $("input[name='apReferrers']").val(selectedReferNameArr);
+                    $("input[name='apReferrersId']").val(selectedReferArr); //input hidden controller로 id 전송
+                });
+
+
+                //---------------------결재 요청 클릭시 ----------------------
+                var formObj = $("form[role='form']");
+
+                $("#request").on("click", function (e) {
+                    e.preventDefault();
+
+                    //1. 변경된 문서내용으로 업데이트
+                    var updateFormData = CKEDITOR.instances.editor1.getData();
+                    $("#formData").val(updateFormData);
+
+                    if (formData == updateFormData) {
+                        alert("내용을 입력해주세요.");
+                        return;
+                    }
+
+                    //2. 입력란 유효성 검사
+                    var apDocTitle = $("#apDocTitle");
+                    var apDocContent = $("#apDocContent");
+
+                    if (apDocTitle.val() == "") {
+                        alert("제목을 입력하세요.");
+                        apDocTitle.focus();
+
+                    }
+                    if (apDocContent.val() == "" || apDocContent.val() == formData) {
+                        alert("내용을 입력하세요.");
+                        apDocContent.focus();
+                        return;
+                    }
+
+                    if(formType =='1' || formType=='2' || formType=='3'){
+
+                        if($("input[name='apStartDate']").val() == "" || $("input[name='apEndDate']").val() == ""){
+                            alert("날짜를 선택하세요.");
+                            return;
+                        }
+                        // var d1 = new Date($("input[name='apStartDate']").val());
+                        // var d2 = new Date($("input[name='apEndDate']").val());
+                        // console.log( d1 <= d2 );
+
+                        if($("input[name='apStartDate']").val()>$("input[name='apEndDate']").val()){
+                            alert("시작 일자가 종료 일자보다 늦습니다. 날짜를 다시 선택하세요.");
+                            return;
+                        }
+                    }
+
+                    var answer = confirm("결재 요청하시겠습니까?");
+                    if (answer != true) {
+                        return;
+                    } else {
+                        //첨부파일 관련//////////////////////////////////////////////////////////////////////
+                        //첨부파일 formObj에 추가하여 controller로 전송
+                        var str = "";
+
+                        $(".uploadResult ul li")
+                            .each(
+                                function (i, obj) {
+
+                                    var jobj = $(obj);
+
+                                    str += "<input type='hidden' name='apFileName'"
+                                        + " value='"
+                                        + jobj
+                                            .data("filename")
+                                        + "*b*l*a*b*l*a*'>";
+                                    str += "<input type='hidden' name='apFileUuid'"
+                                        + " value='"
+                                        + jobj
+                                            .data("uuid")
+                                        + "'>";
+                                    str += "<input type='hidden' name='apFilePath'"
+                                        + " value='"
+                                        + jobj
+                                            .data("path")
+                                        + "'>";
+                                    str += "<input type='hidden' name='apFileType'"
+                                        + " value='"
+                                        + jobj
+                                            .data("type")
+                                        + "'>";
+                                });
+                        formObj.append(str).submit();
+                    }
+                });
+
+                //-------------------------첨부파일 관련 ---------------------------------
+                var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
+                var maxSize = 5242880; //5MB
+
+                //파일 이름, 사이즈 체크
+                function checkExtension(fileName, fileSize) {
+                    if (fileSize >= maxSize) {
+                        alert("파일 사이즈 초과");
+                        return false;
+                    }
+                    if (regex.test(fileName)) {
+                        alert("해당 종류의 파일은 업로드할 수 없습니다.");
+                        return false;
+                    }
+                    return true;
+                }
+
+
+                $("input[type='file']")
+                    .change(
+                        function (e) {
+
+                            var fileFormData = new FormData();
+                            var inputFile = $("input[name='apFiles']");
+                            var files = inputFile[0].files;
+
+                            // console.log(files);
+
+                            for (var i = 0; i < files.length; i++) {
+                                if (!checkExtension( //파일사이즈 체크해서 못하게 수정해야함
+                                    files[i].name,
+                                    files[i].size)) {
+                                    return false;
+                                }
+                                fileFormData.append("apFiles",
+                                    files[i]);
+                            }
+
+                            $.ajax({
+                                url: '/approval/uploadAjaxAction',
+                                processData: false,
+                                contentType: false,
+                                data: fileFormData,
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function (result) {
+                                    console.log(result);
+                                    showUploadResult(result); //업로드 결과 처리 함수
+                                }
+                            }); //ajax end
+                        });
+
+                function showUploadResult(uploadResultArr) {
+
+                    if (!uploadResultArr || uploadResultArr.length == 0) {
+                        return;
+                    }
+
+                    var uploadUL = $(".uploadResult ul");
+                    var str = "";
+
+                    $(uploadResultArr)
+                        .each(
+                            function (i, obj) {
+
+                                //이미지 파일인 경우
+                                if (obj.apFileType == 'image') {
+
+                                    var fileCallPath = encodeURIComponent(obj.apFilePath
+                                        + "/s_"
+                                        + obj.apFileUuid
+                                        + "_"
+                                        + obj.apFileName);
+
+                                    str += "<li style='list-style:none' data-path='" + obj.apFilePath + "'";
+                                    str += " data-uuid='" + obj.apFileUuid + "' data-filename='" + obj.apFileName + "' data-type='image'" + ">";
+                                    str += "<div style='padding-top: 5px;'><i class='fa fa-file-image-o'></i>&nbsp;&nbsp;<span>" + obj.apFileName + "</span>&nbsp;&nbsp;";
+                                    str += "<button type='button' data-file=\'" + fileCallPath + "\' data-type='image' ";
+                                    str += "class='btn btn-secondary btn-xs'><i class='mdi mdi-delete'></i>Delete</button><br>";
+                                    str += "<img src='/approval/display?fileName=" + fileCallPath;
+                                    str += "'></div></li>";
+
+                                } else {
+                                    var fileCallPath = encodeURIComponent(obj.apFilePath
+                                        + "/"
+                                        + obj.apFileUuid
+                                        + "_"
+                                        + obj.apFileName);
+                                    var fileLink = fileCallPath
+                                        .replace(
+                                            new RegExp(
+                                                /\\/g),
+                                            "/");
+
+                                    str += "<li style='list-style:none'"
+                                    str += "data-path='" + obj.apFilePath + "' data-uuid='" + obj.apFileUuid + "' data-filename='" + obj.apFileName + "' data-type='" + "file" + "' >";
+                                    str += "<div style='padding-top: 5px;'><i class='fa fa-file-o'></i>&nbsp;&nbsp;<span>"
+                                        + obj.apFileName
+                                        + "</span> &nbsp;&nbsp;";
+                                    str += "<button type='button' data-file=\'" + fileCallPath + "\' data-type='file' "
+                                    str += "class='btn btn-secondary btn-xs'><i class='mdi mdi-delete'></i>Delete<br>";
+                                    str += "</a></div></li>";
+                                }
+                            });
+
+                    uploadUL.append(str);
+                } //showUploadResult() end
+
+                //첨부파일 삭제
+                $(".uploadResult").on("click", "button", function (e) {
+
+                    console.log("delete file");
+
+                    var targetFile = $(this).data("file");
+                    var type = $(this).data("type");
+                    var targetLi = $(this).closest("li");
+
+                    $.ajax({
+                        url: '/approval/deleteFile',
+                        data: {
+                            fileName: targetFile,
+                            type: type
+                        },
+                        dataType: 'text',
+                        type: 'POST',
+                        success: function (result) {
+                            alert(result);
+                            targetLi.remove();
+                        }
+                    }); //ajax end
+                });
+            });//end
+        </script>
+
+    </div> <!-- content end -->
+</html>

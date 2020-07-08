@@ -1,0 +1,63 @@
+
+<!-- @author:39roc -->
+<!--  -->
+<script src="https://kit.fontawesome.com/722f4a5970.js" crossorigin="anonymous"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<!--  -->
+<!--  -->
+
+
+<i class="fas fa-sync-alt"></i>
+<i class="settings-close fa fa-times"></i>
+
+<!-- ## Modify -->
+<div id="messenger-content">
+  <div class="messenger-navbar">
+    <h6>messenger navbar</h6>
+    <button class="messenger-connect">연결버튼</button>
+    <i class="fas fa-user-plus" ></i>
+    <i class="fas fa-long-arrow-alt-left"></i>
+    <i class="fas fa-sign-out-alt"></i>
+    <i class="fas fa-plus" ></i>
+  </div>
+  <!-- ## 채팅 유저 초대 목록 -->
+  <div id="user-list">
+
+  </div>
+  <!-- ## 채팅방 리스트 -->
+  <ul class="chat-list">
+
+  </ul>
+
+  <!-- ## 채팅방 입장 -->
+  <div id="chatroom-enter">
+    <div id="chatroom-userlist"></div>
+    <div id="chatroom-content">
+      <div id="message-id">
+        <p id="message-author-id"></p>
+        <p id="message-content"></p>
+        <p id="message-creationTime"></p>
+      </div>
+    </div>
+    <div id="chatroom-nav">
+      <input type="text" id="message-send">
+      <i class="fas fa-paper-plane" id="btn-send"></i>
+    </div>
+  </div>
+</div>
+</div>
+<!-- 메신저 -->
+<!--  -->
+<!--  -->
+
+
+/*
+
+'<div class="profile"><img src="" alt="image"><span class="online"></span></div>\n' +
+'  <div class="info">\n' +
+  '      <p>' + chat.roomNo + '</p>\n' +
+  '      <p class="last-message" data-room-no=' + chat.roomNo + '>' + chat.content + '</p>\n' +
+  '  </div>\n' +
+'  <small class="text-muted my-auto">19 min</small>';
+*/

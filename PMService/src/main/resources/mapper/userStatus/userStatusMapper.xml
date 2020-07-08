@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.bit.userStatus.mapper.UserStatusMapper">
+
+    <select id="selectUserStatus" parameterType="com.project.bit.approval.domain.Criteria" resultType="com.project.bit.userStatus.domain.UserStatusVO">
+        SELECT *
+        FROM
+        (SELECT
+             ROWNUM RN
+            ,USER_ID
+            ,USER_NAME
+            ,USER_EMAIL
+            ,USER_PHONE
+            ,PROJECT_NAME
+            ,TASKCOUNTTOTAL
+            ,TASKCOUNTPROCESSING
+            ,TASKCOUNTCOMPLETE
+            ,TASKCOUNTSTANDBY
+        FROM
+        (SELECT
+             USERS.USER_ID
+            ,USERS.USER_NAME
+            ,USERS.USER_EMAIL
+            ,USERS.USER_PHONE
+            ,PROJECTS.PROJECT_NAME
+            ,COUNT(PROJECT_TASKS.TASKGROUP_CODE) as TASKCOUNTTOTAL
+            ,COUNT(CASE WHEN PROJECT_TASKS.TASK_STATUS_CODE = 'taskstatus100' THEN 1 END) AS TASKCOUNTPROCESSING
+            ,COUNT(CASE WHEN PROJECT_TASKS.TASK_STATUS_CODE = 'taskstatus200' THEN 1 END) AS TASKCOUNTCOMPLETE
+            ,COUNT(CASE WHEN PROJECT_TASKS.TASK_STATUS_CODE = 'taskstatus300' THEN 1 END) AS TASKCOUNTSTANDBY
+        FROM USERS
+        INNER JOIN PROJECT_MEMBERS
+            ON USERS.USER_ID = PROJECT_MEMBERS.USER_ID
+        INNER JOIN PROJECTS
+            ON PROJECT_MEMBERS.PROJECT_CODE = PROJECTS.PROJECT_CODE
+        INNER JOIN PROJECT_TASK_GROUPS
+            ON PROJECTS.PROJECT_CODE = PROJECT_TASK_GROUPS.PROJECT_CODE
+        INNER JOIN PROJECT_TASKS
+          ON PROJECT_TASK_GROUPS.TASKGROUP_CODE = PROJECT_TASKS.TASKGROUP_CODE
+        <trim prefix="AND">
+            <choose>
+                <when test="type == 'N'.toString()">
+                    user_name like '%'||#{keyword}||'%'
+                </when>
+                <when test="type == 'P'.toString()">
+                    project_name like '%'||#{keyword}||'%'
+                </when>
+            </choose>
+        </trim>
+        GROUP BY (USERS.USER_ID, USERS.USER_NAME, USERS.USER_EMAIL, USERS.USER_PHONE,PROJECTS.PROJECT_NAME)
+        ORDER BY USER_ID, USER_NAME)
+        <![CDATA[
+         WHERE ROWNUM <= #{pageNum} * #{amount})
+     WHERE RN > (#{pageNum} -1) * #{amount}
+    ]]>
+    </select>
+
+    <!--Total Count-->
+    <select id="selectCountUserStatus" parameterType="com.project.bit.approval.domain.PageDTO" resultType="int">
+        <![CDATA[
+        SELECT
+            COUNT(USER_ID)
+        FROM USERS
+        ]]>
+    </select>
+
+</mapper>
+

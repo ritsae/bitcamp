@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+h5 {
+	margin-top: 20px;
+}
+
+.issue-list {
+	margin-top: 2%;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.issue-name {
+	width: 40%;
+}

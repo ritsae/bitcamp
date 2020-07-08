@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<title id="pageTitle">MAIN</title>
+<!-- page 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+    <link rel="stylesheet" href="/css/dashBoard/dashBoardStyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+</th:block>
+
+<!-- page 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+	<script src="/js/dashBoard/projectChartDashBoard.js"></script>
+<!--    <script src="/js/project/projectChart.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-12 grid-margin">
+    <select id="project-select" style="margin-bottom: 10px; width: 100%">
+        <th:block th:each="project : ${projectNameList}">
+            <option th:value="${project.projectCode}" th:text="${project.projectName}" th:selected="${defaultProject.projectCode} == ${project.projectCode}">
+        </th:block>
+    </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">프로젝트 정보</h6>
+                    <span class="h4" id="project-name"></span>
+                    <div class="row mt-3">
+                        <div class="col-xs-12 col-md-3">
+                            <p class="mb-3 p-0">시작일</p>
+                            <span class="start-box" id="project-start"></span>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <p class="mb-3 p-0">종료일</p>
+                            <span class="finish-box" id="project-finish"></span>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-xs-12 col-md-3">
+                            <p class="mb-2 p-0">PM</p>
+                            <span class="font-weight-bold" id="project-pm"></span>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <p class="mb-2 p-0">개발형태</p>
+                            <span class="font-weight-bold" id="project-type"></span>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="d-flex text-black-50">
+                        <p><i class="fa fa-check opacity-5"></i> <span class="font-weight-bold" id="project-task-account"></span> Tasks</p>
+                        <p class="pl-3"><i class="fa fa-user opacity-5"></i> <span class="font-weight-bold" id="project-member-account"></span> Members</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- row end -->
+    <div th:replace="/project/projectDetailChart :: project-detail-chart"></div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.9/js/select2.min.js"></script>
+    <script>
+        // select2 초기화
+        $('select').select2({});
+    </script>
+
+    <!--<script type="text/javascript">
+        const btn = document.getElementById('btn');
+        btn.addEventListener('click', function () {
+            const searchb = document.getElementById('searchb');
+            getData('http://localhost:8080/search?keyword='+searchb.value, {})
+                .then(
+                    /* 처리할 코드 */
+                    response=>console.log(response)
+                );
+        });
+
+        async function getData(url = '', data = {}) {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.json();
+        }
+    </script>-->
+
+</div>
+
+
+</html>

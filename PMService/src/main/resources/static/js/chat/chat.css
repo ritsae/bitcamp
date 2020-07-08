@@ -1,0 +1,58 @@
+/*
+CHAT CSS
+*/
+
+.fas fa-user-plus .fas fa-long-arrow-alt-left .fas fa-sign-out-alt .fas fa-plus {
+    height: 100px;
+}
+
+#chatroom-content {
+    overflow: auto;
+    height: 400px;
+}
+
+.chatroom-message:after {
+    content: '.';
+    display: block;
+    clear: both;
+    visibility: hidden;
+    overflow: hidden;
+    height: 0;
+}
+
+#chatroom-user-message {
+    background-color: #00CBF6;
+    border-radius: 15px;
+    padding: 15px;
+    font-family: 'Do Hyeon', sans-serif;
+    margin: auto;
+}
+
+#chatroom-userlist {
+    display: inline-flex;
+    padding: 15px;
+    font-family: 'Do Hyeon', sans-serif;
+}
+
+#chatroom-user-id {
+    margin: auto;
+    font-family: 'Do Hyeon', sans-serif;
+}
+
+#chatroom-user-message-time {
+    font-family: 'Do Hyeon', sans-serif;
+    text-align: right;
+}
+
+#row right {
+    float: right;
+}
+
+.profile-list-item:hover {
+    border-radius: 15px;
+    background: #03a9f3;
+}
+
+.profile-list-item active {
+    background: aliceblue;
+}

@@ -1,0 +1,137 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout/default}">
+
+<title id="pageTitle">채팅</title>
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{js/chat/chat.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+</th:block>
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">대화방</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          대화방 진짜 나갈겁니까?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="btn-leave" data-dismiss="modal">나갈고야</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="email-wrapper wrapper" id="test-list">
+    <div class="row align-items-stretch">
+      <div class="mail-sidebar d-none d-lg-block col-md-2 pt-3 bg-white">
+        <input type="hidden" id="user-id-hidden" th:value="${#authentication.getName()}">
+        <div class="menu-bar">
+          <ul class="menu-items">
+            <li class="compose mb-3"><button class="btn btn-primary btn-block" id="messenger-connect">메신저 연결</button></li>
+            <li id="listup"><a><i class="far fa-list-alt"></i> 채팅방 목록 조회</a><span class="badge badge-pill badge-success" th:text="${count[1]}"></span></li>
+            <li><a id="btn-fetchUserList"><i class="fas fa-user-plus"></i> 유저 목록 조회 </a><span class="badge badge-pill badge-dark" th:text="${count[0]}"></span></li>
+            <li><a id="btn-invite"><i class="fas fa-plus"></i>대화방으로 초대 하기 </a></li>
+            <!--<li><a><i class="mdi mdi-upload"></i> 임의 목록 </a><span class="badge badge-pill badge-danger">4</span></li>
+            <li><img></li>-->
+          </ul>
+          <div class="wrapper">
+            <div class="online-status d-flex justify-content-between align-items-center">
+              <p class="chat text-center"> 유저 목록</p> <span class="status offline online"></span></div>
+          </div>
+          <!--<div id="search-list"><input type="text" id="finder"></div>-->
+          <ul class="profile-list" id="user-list">
+          </ul>
+        </div>
+      </div>
+      <div class="mail-list-container col-md-3 pt-4 pb-4 border-right bg-white" id="chat-list">
+        <div class="border-bottom pb-4 mb-3 px-3">
+          <div class="form-group">
+            <input class="form-control form-control-sm w-100" type="search" placeholder="Search mail" id="Mail-rearch">
+          </div>
+        </div>
+      </div>
+      <div class="mail-view d-none d-md-block col-md-9 col-lg-7 bg-white">
+        <div class="message-body">
+          <div class="sender-details">
+            <img class="img-sm rounded-circle mr-3" src="../../images/faces/face11.jpg" alt="">
+            <div class="details">
+              <p class="msg-subject">
+                채팅방 정보
+              </p>
+              <p class="sender-email">
+                정보
+                <a href="#">링크</a>
+                &nbsp;<i class="mdi mdi-account-multiple-plus"></i>
+              </p>
+            </div>
+            <div style="margin-left: 600px;">
+             <!--<span style="font-size: 40px"><i class="fas fa-user-plus"></i></span>-->
+             <span style="font-size: 40px"><i class="fas fa-plus" id="btn-add"></i></span>
+             <span style="font-size: 40px"><i class="fas fa-sign-out-alt" data-toggle="modal" data-target="#exampleModal"></i></span>
+            </div>
+
+          </div>
+          <div id="chatroom-userlist">
+          </div>
+          <div class="message-content" id="chatroom-content">
+          </div>
+          <!--<div class="attachments-sections">
+            <ul>
+              <li>
+                <div class="thumb"><i class="mdi mdi-file-pdf"></i></div>
+                <div class="details">
+                  <p class="file-name">Seminar Reports.pdf</p>
+                  <div class="buttons">
+                    <p class="file-size">678Kb</p>
+                    <a href="#" class="view">View</a>
+                    <a href="#" class="download">Download</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="thumb"><i class="mdi mdi-file-image"></i></div>
+                <div class="details">
+                  <p class="file-name">Product Design.jpg</p>
+                  <div class="buttons">
+                    <p class="file-size">1.96Mb</p>
+                    <a href="#" class="view">View</a>
+                    <a href="#" class="download">Download</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>-->
+        </div>
+        <div class="row">
+          <div class="col-md-12 mb-4 mt-4">
+            <div class="btn-toolbar">
+              <div class="btn-group">
+                <input id="message-send" data-emojiable=true data-imoji-input="unicode">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-send"><i class="mdi mdi-reply text-primary"></i> Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>
